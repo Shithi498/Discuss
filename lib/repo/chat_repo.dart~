@@ -1,0 +1,58 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import '../model/chat_model.dart';
+
+
+class ChatRepo {
+  final String baseUrl;
+  final String sessionCookie;
+
+  ChatRepo({
+    required this.baseUrl,
+    required this.sessionCookie,
+  });
+
+  Map<String, String> get _headers => {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    "Cookie": sessionCookie,
+  };
+
+
+  Future<Chat> createThreadForPartner({
+    required String partnerName,
+    required int partnerId,
+  })  async {
+    final url = Uri.parse("$baseUrl/api/discuss/channel/create");
+
+    final body = jsonEncode({
+      "jsonrpc": "2.0",
+      "params": {
+        "name": "$partnerName",
+        "partner_ids": [partnerId],
+        "thread_type": "chat",
+      }
+    });
+
+    final response =
+    await http.post(url, headers: _headers, body: body);
+print('response');
+print(response.body);
+    if (response.statusCode != 200) {
+      throw Exception("HTTP ${response.statusCode}");
+    }
+
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (data['error'] != null) {
+      throw Exception(data['error']['message'] ?? 'Unknown server error');
+    }
+
+    return Chat.fromJson(data);
+  }
+
+
+}
+
+
+
