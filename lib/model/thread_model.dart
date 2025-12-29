@@ -71,7 +71,7 @@ class Participant {
 class MessageThread {
   final int id;
   final String name;
-  final String type;
+  final String? type;
   final List<Participant> participants;
 
   final String? lastMessage;

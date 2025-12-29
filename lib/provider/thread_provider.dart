@@ -52,57 +52,100 @@ class ThreadProvider extends ChangeNotifier {
 
   ThreadProvider({required this.repo}) ;
 
-  List<MessageThread> _threads = [];
-  bool _isLoading = false;
-  String? _error;
+  // List<MessageThread> _threads = [];
+ //  bool _isLoading = false;
+  // String? _error;
+  //
+  // List<MessageThread> get threads => _threads;
+  // bool get isLoading => _isLoading;
+  // String? get error => _error;
 
-  List<MessageThread> get threads => _threads;
-  bool get isLoading => _isLoading;
-  String? get error => _error;
+  bool loadingChats = false;
+  bool loadingGroups = false;
+  bool loadingChannels = false;
+  String? chatsError;
+  String? groupsError;
+  String? channelsError;
+  List<MessageThread> chatThreads = [];
+  List<MessageThread> groupThreads = [];
+  List<MessageThread> channelThreads = [];
 
+  List<MessageThread> get allThreads {
+    final all = <MessageThread>[...chatThreads, ...groupThreads];
 
+    // If both have same thread id sometimes, remove duplicates:
+    final map = <int, MessageThread>{};
+    for (final t in all) {
+      map[t.id] = t;
+    }
+    final merged = map.values.toList();
+
+    // Sort newest first if you have a date
+  //  merged.sort((a, b) => (b.lastMessageDate ?? "").compareTo(a.lastMessageDate ?? ""));
+    return merged;
+  }
+
+  Future<void> loadAll() async {
+    await Future.wait([loadThreads(), loadgroupThreads()]);
+  }
   Future<void> loadThreads() async {
-    _isLoading = true;
+    loadingChats = true;
     notifyListeners();
 
     try {
-      _threads = await repo.fetchThreads();
-      _error = null;
+      chatThreads  = await repo.fetchThreads();
+      chatsError = null;
     } catch (e) {
-      _error = e.toString();
+      chatsError = e.toString();
     }
 
-    _isLoading = false;
+    loadingChats = false;
     notifyListeners();
   }
 
   Future<void> loadgroupThreads() async {
-    _isLoading = true;
+    loadingGroups = true;
     notifyListeners();
 
     try {
-      _threads = await repo.groupfetchThreads();
-      _error = null;
+      groupThreads = await repo.groupfetchThreads();
+      groupsError = null;
     } catch (e) {
-      _error = e.toString();
+      groupsError = e.toString();
     }
 
-    _isLoading = false;
+    loadingGroups = false;
+    notifyListeners();
+  }
+
+  Future<void> loadchannelThreads() async {
+    loadingChannels = true;
+    notifyListeners();
+
+    try {
+      channelThreads = await repo.channelfetchThreads();
+      channelsError = null;
+
+    } catch (e) {
+      channelsError = e.toString();
+    }
+
+    loadingChannels = false;
     notifyListeners();
   }
 
 
-  Future<void> refreshSilently() async {
-    try {
-      final updatedList = await repo.fetchThreads();
-
-      // Always replace with latest server view to avoid missing new threads.
-      _threads = updatedList;
-      notifyListeners();
-    } catch (_) {
-      // ignore errors silently
-    }
-  }
+  // Future<void> refreshSilently() async {
+  //   try {
+  //     final updatedList = await repo.fetchThreads();
+  //
+  //
+  //     _threads = updatedList;
+  //     notifyListeners();
+  //   } catch (_) {
+  //     // ignore errors silently
+  //   }
+  // }
 
 
 

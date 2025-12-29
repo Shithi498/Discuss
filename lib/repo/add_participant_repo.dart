@@ -5,7 +5,7 @@ import '../model/add_participant.dart';
 
 class AddParticipantRepo {
   final String baseUrl;
-  final String sessionCookie; // e.g. "session_id=xyz"
+  final String sessionCookie;
 
   AddParticipantRepo({
     required this.baseUrl,

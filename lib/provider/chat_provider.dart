@@ -14,16 +14,17 @@ class ChatProvider extends ChangeNotifier {
   List<Chat> messagesForThread(int threadId) =>
       _messagesByThread[threadId] ?? [];
 
-  Future<void> createThread({
+  Future<void> createChatThread({
     required String partnerName,
     required int partnerId,
+
   }) async {
     loading = true;
     error = null;
     notifyListeners();
 
     try {
-      thread = await repo.createThreadForPartner(
+      thread = await repo.createChatThreadForPartner(
         partnerName: partnerName,
         partnerId: partnerId,
       );
@@ -35,8 +36,47 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> createGroupThread({
+    required String partnerName,
+    required int partnerId,
+  }) async {
+    loading = true;
+    error = null;
+    notifyListeners();
 
+    try {
+      thread = await repo.createGroupThreadForPartner(
+        partnerName: partnerName,
+        partnerId: partnerId,
+      );
+    } catch (e) {
+      error = e.toString();
+    }
 
+    loading = false;
+    notifyListeners();
+  }
+
+  Future<void> createChannelThread({
+    required String partnerName,
+    required int partnerId,
+  }) async {
+    loading = true;
+    error = null;
+    notifyListeners();
+
+    try {
+      thread = await repo.createChannelThreadForPartner(
+        partnerName: partnerName,
+        partnerId: partnerId,
+      );
+    } catch (e) {
+      error = e.toString();
+    }
+
+    loading = false;
+    notifyListeners();
+  }
 
 }
 

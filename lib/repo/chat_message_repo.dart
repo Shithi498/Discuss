@@ -82,7 +82,7 @@ class MessageRepo {
   // }
 
   Future<SendMessageResponse> sendMessage({
-    required int threadId, // keep your app param name
+    required int threadId,
     required String body,
     List<int> attachmentIds = const [],
   }) async {

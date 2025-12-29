@@ -19,7 +19,7 @@ class ChatRepo {
   };
 
 
-  Future<Chat> createThreadForPartner({
+  Future<Chat> createChatThreadForPartner({
     required String partnerName,
     required int partnerId,
   })  async {
@@ -30,7 +30,7 @@ class ChatRepo {
       "params": {
         "name": "$partnerName",
         "partner_ids": [partnerId],
-        "thread_type": "group",
+        "thread_type": "chat",
       }
     });
 
@@ -51,7 +51,69 @@ print(response.body);
     return Chat.fromJson(data);
   }
 
+  Future<Chat> createGroupThreadForPartner({
+    required String partnerName,
+    required int partnerId,
+  })  async {
+    final url = Uri.parse("$baseUrl/api/discuss/channel/create");
 
+    final body = jsonEncode({
+      "jsonrpc": "2.0",
+      "params": {
+        "name": "$partnerName",
+        "partner_ids": [partnerId],
+        "thread_type": "group",
+      }
+    });
+
+    final response =
+    await http.post(url, headers: _headers, body: body);
+    print('response');
+    print(response.body);
+    if (response.statusCode != 200) {
+      throw Exception("HTTP ${response.statusCode}");
+    }
+
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (data['error'] != null) {
+      throw Exception(data['error']['message'] ?? 'Unknown server error');
+    }
+
+    return Chat.fromJson(data);
+  }
+
+  Future<Chat> createChannelThreadForPartner({
+    required String partnerName,
+    required int partnerId,
+  })  async {
+    final url = Uri.parse("$baseUrl/api/discuss/channel/create");
+
+    final body = jsonEncode({
+      "jsonrpc": "2.0",
+      "params": {
+        "name": "$partnerName",
+        "partner_ids": [partnerId],
+        "thread_type": "channel",
+      }
+    });
+
+    final response =
+    await http.post(url, headers: _headers, body: body);
+    print('response');
+    print(response.body);
+    if (response.statusCode != 200) {
+      throw Exception("HTTP ${response.statusCode}");
+    }
+
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (data['error'] != null) {
+      throw Exception(data['error']['message'] ?? 'Unknown server error');
+    }
+
+    return Chat.fromJson(data);
+  }
 }
 
 

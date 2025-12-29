@@ -265,7 +265,8 @@ import 'chat_page.dart';
 //
 //   }
 // }
-
+enum SearchFromTab { chats, channels}
+enum ThreadType { direct, group }
 class InboxPage extends StatefulWidget {
   const InboxPage({super.key});
 
@@ -279,11 +280,21 @@ class _InboxPageState extends State<InboxPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ThreadProvider>().loadThreads();
+      context
+          .read<ThreadProvider>()
+          .loadingChats;
 
-       context.read<ThreadProvider>().loadgroupThreads();
+      context.read<ThreadProvider>().loadgroupThreads();
+      context
+          .read<ThreadProvider>()
+          .loadingChannels;
     });
   }
+
+  Future<void> _refreshAll(BuildContext context) async {
+    await context.read<ThreadProvider>().loadAll();
+  }
+
 
   Future<void> _refreshChats(BuildContext context) async {
     await context.read<ThreadProvider>().loadThreads();
@@ -291,12 +302,20 @@ class _InboxPageState extends State<InboxPage> {
 
 
   Future<void> _refreshGroups(BuildContext context) async {
-     await context.read<ThreadProvider>().loadgroupThreads();
+    await context.read<ThreadProvider>().loadgroupThreads();
   }
+
+  Future<void> _refreshChannels(BuildContext context) async {
+    await context.read<ThreadProvider>().loadchannelThreads();
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    final w = MediaQuery.of(context).size.width;
+    final w = MediaQuery
+        .of(context)
+        .size
+        .width;
 
     final bool smallPhone = w < 360;
     final bool bigPhone = w >= 420;
@@ -310,51 +329,100 @@ class _InboxPageState extends State<InboxPage> {
 
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
+      child:
+      // Scaffold(
+      //   appBar: AppBar(
+      //     title: const Text('Inbox'),
+      //     actions: [
+      //       IconButton(
+      //         icon: const Icon(Icons.add),
+      //         onPressed: () {
+      //           Navigator.push(
+      //             context,
+      //             MaterialPageRoute(
+      //               builder: (_) => SearchPage(source: SearchSource.search),
+      //             ),
+      //           );
+      //         },
+      //       ),
+      //     ],
+      //     // bottom: const TabBar(
+      //     //   tabs: [
+      //     //     Tab(text: "Chats", icon: Icon(Icons.chat_bubble_outline)),
+      //     //     Tab(text: "Groups", icon: Icon(Icons.groups_outlined)),
+      //     //   ],
+      //     // ),
+      //      bottom: const TabBar(
+      //      , tabs: [],final tab = DefaultTabController.of(context)!.index == 0
+      //          ? SearchFromTab.chats
+      //          : SearchFromTab.groups;
+      //      ),
+      //
+      //   ),
+      Scaffold(
         appBar: AppBar(
-          title: const Text('Inbox'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => SearchPage(source: SearchSource.search),
-                  ),
-                );
-              },
-            ),
-          ],
+          title: const Text("Inbox"),
           bottom: const TabBar(
             tabs: [
               Tab(text: "Chats", icon: Icon(Icons.chat_bubble_outline)),
-              Tab(text: "Groups", icon: Icon(Icons.groups_outlined)),
+              Tab(text: "Channels", icon: Icon(Icons.groups_outlined)),
             ],
           ),
+          actions: [
+            Builder(
+              builder: (ctx) =>
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () {
+                      final index = DefaultTabController
+                          .of(ctx)
+                          .index;
+                      final fromTab = index == 0
+                          ? SearchFromTab.chats
+                          : SearchFromTab.channels;
+
+                      Navigator.push(
+                        ctx,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              SearchPage(
+                                fromTab: fromTab, source: SearchSource.search,),
+                        ),
+                      );
+                    },
+                  ),
+            ),
+          ],
         ),
+
 
         body: TabBarView(
           children: [
 
             RefreshIndicator(
-              onRefresh: () => _refreshChats(context),
+              onRefresh: () => _refreshAll(context),
               child: Builder(
                 builder: (context) {
                   final threadProvider = context.watch<ThreadProvider>();
 
-                  if (threadProvider.isLoading && threadProvider.threads.isEmpty) {
+                  if (threadProvider.loadingGroups &&
+                      threadProvider.groupThreads.isEmpty ||
+                      threadProvider.loadingChats &&
+                      threadProvider.chatThreads.isEmpty) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  if (threadProvider.error != null && threadProvider.threads.isEmpty) {
+                  if (threadProvider.groupsError != null &&
+                      threadProvider.groupThreads.isEmpty &&
+                      threadProvider.chatsError != null &&
+                      threadProvider.chatThreads.isEmpty) {
                     return ListView(
                       children: [
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Text(
-                              'Error: ${threadProvider.error}',
+                              'Error: ${threadProvider.groupsError}',
                               textAlign: TextAlign.center,
                               style: const TextStyle(color: Colors.red),
                             ),
@@ -364,7 +432,7 @@ class _InboxPageState extends State<InboxPage> {
                     );
                   }
 
-                  final List<MessageThread> threads = threadProvider.threads;
+                  final List<MessageThread> threads = threadProvider.allThreads;
 
                   if (threads.isEmpty) {
                     return ListView(
@@ -385,9 +453,7 @@ class _InboxPageState extends State<InboxPage> {
                       final lastDate = thread.lastMessageDate != null
                           ? '${thread.lastMessageDate}'
                           : '';
-
                       final unread = thread.unreadCount;
-
                       final auth = context.read<AuthProvider>();
                       final currentUid = auth.user?.uid;
                       final currentPartnerId = auth.user?.partnerId;
@@ -415,7 +481,8 @@ class _InboxPageState extends State<InboxPage> {
                           backgroundImage: const AssetImage(
                             "assets/images/user_placeholder.jpg",
                           ),
-                          child: (partner?.name == null || partner!.name!.isEmpty)
+                          child: (partner?.name == null ||
+                              partner!.name!.isEmpty)
                               ? const Icon(Icons.person, color: Colors.white)
                               : null,
                         ),
@@ -454,7 +521,8 @@ class _InboxPageState extends State<InboxPage> {
                                   child: FittedBox(
                                     fit: BoxFit.scaleDown,
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 4),
                                       child: Text(
                                         unread.toString(),
                                         style: TextStyle(
@@ -470,14 +538,22 @@ class _InboxPageState extends State<InboxPage> {
                           ),
                         ),
                         onTap: () {
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => ChatPage(
-                                threadId: thread.id,
-                                partnerId: partner?.partnerId ?? partner?.id,
-                                title: partner?.name ?? 'Unknown user',
-                              ),
+                              builder: (_) =>
+                                  ChatPage(
+                                    threadId: thread.id,
+                                    partnerId: partner?.partnerId ??
+                                        partner?.id,
+                                    title: partner?.name ?? 'Unknown user',
+                                    fromTab: SearchFromTab.chats,
+                                    type: thread.type == 'group'
+                                        ? ThreadType.group
+                                        : ThreadType.direct,
+
+                                  ),
                             ),
                           );
                         },
@@ -487,7 +563,8 @@ class _InboxPageState extends State<InboxPage> {
                             builder: (ctx) {
                               return AlertDialog(
                                 title: const Text("Thread options"),
-                                content: const Text("Mark this conversation as read?"),
+                                content: const Text(
+                                    "Mark this conversation as read?"),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(ctx, false),
@@ -503,8 +580,12 @@ class _InboxPageState extends State<InboxPage> {
                           );
 
                           if (selected == true) {
-                            await context.read<MarkedReadProvider>().markAsRead(thread);
-                            final err = context.read<MarkedReadProvider>().error;
+                            await context.read<MarkedReadProvider>().markAsRead(
+                                thread);
+
+                            final err = context
+                                .read<MarkedReadProvider>()
+                                .error;
                             if (err != null) {
                               if (!context.mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -520,25 +601,26 @@ class _InboxPageState extends State<InboxPage> {
               ),
             ),
 
-
             RefreshIndicator(
-              onRefresh: () => _refreshGroups(context),
+              onRefresh: () => _refreshChannels(context),
               child: Builder(
                 builder: (context) {
                   final threadProvider = context.watch<ThreadProvider>();
 
-                  if (threadProvider.isLoading && threadProvider.threads.isEmpty) {
+                  if (threadProvider.loadingChannels &&
+                      threadProvider.channelThreads.isEmpty) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  if (threadProvider.error != null && threadProvider.threads.isEmpty) {
+                  if (threadProvider.channelsError != null &&
+                      threadProvider.channelThreads.isEmpty) {
                     return ListView(
                       children: [
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Text(
-                              'Error: ${threadProvider.error}',
+                              'Error: ${threadProvider.channelsError}',
                               textAlign: TextAlign.center,
                               style: const TextStyle(color: Colors.red),
                             ),
@@ -548,13 +630,15 @@ class _InboxPageState extends State<InboxPage> {
                     );
                   }
 
-                  final List<MessageThread> threads = threadProvider.threads;
-
+                  final List<MessageThread> threads = threadProvider
+                      .channelThreads;
+                  print("Channels");
+                  print(threads);
                   if (threads.isEmpty) {
                     return ListView(
                       children: const [
                         SizedBox(height: 200),
-                        Center(child: Text('No groups yet')),
+                        Center(child: Text('No channels yet')),
                       ],
                     );
                   }
@@ -569,9 +653,7 @@ class _InboxPageState extends State<InboxPage> {
                       final lastDate = thread.lastMessageDate != null
                           ? '${thread.lastMessageDate}'
                           : '';
-
                       final unread = thread.unreadCount;
-
                       final auth = context.read<AuthProvider>();
                       final currentUid = auth.user?.uid;
                       final currentPartnerId = auth.user?.partnerId;
@@ -599,7 +681,8 @@ class _InboxPageState extends State<InboxPage> {
                           backgroundImage: const AssetImage(
                             "assets/images/user_placeholder.jpg",
                           ),
-                          child: (partner?.name == null || partner!.name!.isEmpty)
+                          child: (partner?.name == null ||
+                              partner!.name!.isEmpty)
                               ? const Icon(Icons.person, color: Colors.white)
                               : null,
                         ),
@@ -638,7 +721,8 @@ class _InboxPageState extends State<InboxPage> {
                                   child: FittedBox(
                                     fit: BoxFit.scaleDown,
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 4),
                                       child: Text(
                                         unread.toString(),
                                         style: TextStyle(
@@ -657,11 +741,14 @@ class _InboxPageState extends State<InboxPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => ChatPage(
-                                threadId: thread.id,
-                                partnerId: partner?.partnerId ?? partner?.id,
-                                title: partner?.name ?? 'Unknown user',
-                              ),
+                              builder: (_) =>
+                                  ChatPage(
+                                    threadId: thread.id,
+                                    partnerId: partner?.partnerId ??
+                                        partner?.id,
+                                    title: partner?.name ?? 'Unknown user',
+                                    fromTab: SearchFromTab.channels,
+                                  ),
                             ),
                           );
                         },
@@ -671,7 +758,8 @@ class _InboxPageState extends State<InboxPage> {
                             builder: (ctx) {
                               return AlertDialog(
                                 title: const Text("Thread options"),
-                                content: const Text("Mark this conversation as read?"),
+                                content: const Text(
+                                    "Mark this conversation as read?"),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(ctx, false),
@@ -687,9 +775,12 @@ class _InboxPageState extends State<InboxPage> {
                           );
 
                           if (selected == true) {
-                            await context.read<MarkedReadProvider>().markAsRead(thread);
+                            await context.read<MarkedReadProvider>().markAsRead(
+                                thread);
 
-                            final err = context.read<MarkedReadProvider>().error;
+                            final err = context
+                                .read<MarkedReadProvider>()
+                                .error;
                             if (err != null) {
                               if (!context.mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -704,9 +795,11 @@ class _InboxPageState extends State<InboxPage> {
                 },
               ),
             ),
+
           ],
         ),
       ),
     );
   }
 }
+

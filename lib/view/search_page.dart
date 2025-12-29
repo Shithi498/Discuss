@@ -4,16 +4,18 @@ import '../provider/add_participant_provider.dart';
 import '../provider/chat_provider.dart';
 import '../provider/search_provider.dart';
 import 'chat_page.dart';
+import 'inbox_page.dart';
 
 
 class SearchPage extends StatefulWidget {
+  final SearchFromTab? fromTab;
   final SearchSource source;
   final int? threadId;
 final String? image;
   const SearchPage({
     super.key,
     required this.source,
-    this.threadId, this.image,
+    this.threadId, this.image, this.fromTab,
   });
 
   @override
@@ -100,12 +102,20 @@ class _SearchPageState extends State<SearchPage> {
 
 
                         final chatProv = context.read<ChatProvider>();
+                     if(widget.fromTab== SearchFromTab.chats) {
+                       await chatProv.createChatThread(
+                       partnerName: p.name,
+                      partnerId: p.partnerId ?? p.id,
+                    );
+}
 
-                        await chatProv.createThread(
-                          partnerName: p.name,
-                          partnerId: p.partnerId ?? p.id,
-                        );
-
+                        if(widget.fromTab== SearchFromTab.channels) {
+                          print("print channel");
+                          await chatProv.createChannelThread(
+                            partnerName: p.name,
+                            partnerId: p.partnerId ?? p.id,
+                          );
+                        }
                         if (chatProv.error != null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(chatProv.error!)),
@@ -122,7 +132,9 @@ class _SearchPageState extends State<SearchPage> {
                               threadId: thread.threadId,
                               partnerId: p.id,
                               title: thread.name,
-                              image:p.image
+                              image:p.image,
+                              email: p.email,
+                              phone: p.phone
                             ),
                           ),
                         );

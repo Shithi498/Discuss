@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:discusskendroo/view/inbox_page.dart';
 import 'package:discusskendroo/view/profile_details_page.dart';
 import 'package:discusskendroo/view/search_page.dart';
 import 'package:file_picker/file_picker.dart';
@@ -9,7 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
-import '../model/attachment_upload.dart';
 import '../model/load_message_model.dart';
 import '../provider/attachment_provider.dart';
 import '../provider/auth_provider.dart';
@@ -18,22 +18,29 @@ import '../provider/load_message_provider.dart';
 import '../provider/message_provider.dart';
 import '../provider/reaction_provider.dart';
 import '../provider/read_msg_provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:open_filex/open_filex.dart';
-
 import '../provider/search_provider.dart';
 
-enum SearchSource { search, addmember }
+
+enum SearchSource { search, addmember,  }
+
 class ChatPage extends StatefulWidget {
   final int threadId;
   final int? partnerId;
   final String title;
 final String? image;
+final SearchFromTab? fromTab;
+final SearchSource? source;
+final ThreadType? type;
+
+final String? email;
+final String? phone;
   const ChatPage({
     super.key,
     required this.threadId,
     this.partnerId,
     required this.title,  this.image,
+     this.fromTab, this.source, this.type, this.email, this.phone
   });
 
   @override
@@ -126,54 +133,6 @@ class _ChatPageState extends State<ChatPage> {
           final String name = (a['name'] ?? 'Attachment').toString();
           final String mime = (a['mimetype'] ?? '').toString();
           final int id = a['id'];
-
-          // 🖼 IMAGE
-          // if (mime.startsWith('image/')) {
-          //   return Padding(
-          //     padding: const EdgeInsets.only(top: 6),
-          //     child: InkWell(
-          //       onTap: () async {
-          //         final file = await attachmentProv.download(
-          //           attachmentId: id,
-          //           fileName: name,
-          //         );
-          //
-          //         if (file == null) return;
-          //
-          //         _showLocalImagePreview(file);
-          //       },
-          //       child: Container(
-          //         width: smallPhone ? 160 : 200,
-          //         height: smallPhone ? 160 : 200,
-          //         decoration: BoxDecoration(
-          //           color: isMine ? Colors.white24 : Colors.black12,
-          //           borderRadius: BorderRadius.circular(10),
-          //         ),
-          //         alignment: Alignment.center,
-          //         child: Column(
-          //           mainAxisAlignment: MainAxisAlignment.center,
-          //           children: [
-          //             const Icon(Icons.image, size: 40),
-          //             const SizedBox(height: 6),
-          //             Text(
-          //               name,
-          //               maxLines: 2,
-          //               overflow: TextOverflow.ellipsis,
-          //               textAlign: TextAlign.center,
-          //               style: TextStyle(
-          //                 color:
-          //                 isMine ? Colors.white : Colors.black87,
-          //                 fontSize: 12,
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   );
-          // }
-
-
 
           if (mime.startsWith('image/')) {
             return Padding(
@@ -416,79 +375,10 @@ class _ChatPageState extends State<ChatPage> {
 final searchProv = context.watch<SearchProvider>();
     final List<loadMessage> messages =
     loadProv.messagesForThread(widget.threadId);
-
+    print("widget.type");
+    print(widget.type);
     return Scaffold(
-      // appBar: AppBar(
-      //   titleSpacing: 0,
-      //   leading: IconButton(
-      //     icon: const Icon(Icons.arrow_back),
-      //     onPressed: () => Navigator.pop(context),
-      //   ),
-      //   title: InkWell(
-      //     onTap: () {
-      //       Navigator.push(
-      //         context,
-      //         MaterialPageRoute(
-      //           builder: (_) => ProfileDetailsScreen(name: widget.title),
-      //         ),
-      //       );
-      //     },
-      //     child: Builder(
-      //       builder: (context) {
-      //         final double w = MediaQuery.of(context).size.width;
-      //         final bool smallPhone = w < 360;
-      //         final bool bigPhone = w >= 420;
-      //
-      //         final double avatarSize =
-      //         smallPhone ? 24 : (bigPhone ? 32 : 28);
-      //         final double titleFont =
-      //         smallPhone ? 13 : (bigPhone ? 16 : 15);
-      //         final double gap = smallPhone ? 6 : 10;
-      //
-      //         return Row(
-      //           children: [
-      //             SizedBox(width: smallPhone ? 4 : 6),
-      //             SizedBox(
-      //               width: avatarSize,
-      //               height: avatarSize,
-      //               child: CircleAvatar(
-      //                 backgroundColor: Colors.grey.shade300,
-      //                 backgroundImage: const AssetImage(
-      //                   "assets/images/user_placeholder.jpg",
-      //                 ),
-      //               ),
-      //             ),
-      //             SizedBox(width: gap),
-      //             Expanded(
-      //               child: Text(
-      //                 widget.title,
-      //                 maxLines: 1,
-      //                 overflow: TextOverflow.ellipsis,
-      //                 style: TextStyle(
-      //                   fontSize: titleFont,
-      //                   fontWeight: FontWeight.w600,
-      //                 ),
-      //               ),
-      //             ),
-      //           ],
-      //         );
-      //       },
-      //     ),
-      //   ),
-      //   IconButton(
-      //     icon: const Icon(Icons.more),
-      //     onPressed: () {
-      //       Navigator.push(
-      //         context,
-      //         MaterialPageRoute(
-      //           builder: (_) =>SearchPage(source: SearchSource.addmember),
-      //
-      //
-      //         ),
-      //       );
-      //     },
-      //   ),
-      // ),
+
       appBar: AppBar(
         titleSpacing: 0,
         leading: IconButton(
@@ -501,10 +391,11 @@ final searchProv = context.watch<SearchProvider>();
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => ProfileDetailsScreen(name: widget.title,threadId: widget.threadId,image: widget.image),
+                builder: (_) => ProfileDetailsScreen(name: widget.title,threadId: widget.threadId,image: widget.image, email:widget.email, phone: widget.phone),
               ),
             );
           },
+
           child: Builder(
             builder: (context) {
               final double w = MediaQuery.of(context).size.width;
@@ -551,23 +442,25 @@ final searchProv = context.watch<SearchProvider>();
         ),
 
         actions: [
-          IconButton(
-            icon: const Icon(Icons.more_horiz),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => SearchPage(
 
+      //    if (widget.fromTab == SearchFromTab.channels  )
+
+            IconButton(
+              icon: const Icon(Icons.more_horiz),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => SearchPage(
                       source: SearchSource.addmember,
-                    threadId: widget.threadId,
+                      threadId: widget.threadId,
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-
+                );
+              },
+            ),
         ],
+
       ),
 
       body: Column(
@@ -953,10 +846,6 @@ print("isRead :$isRead");
     );
   }
 }
-
-
-
-
 
 class ChatImagePreview extends StatefulWidget {
   final int attachmentId;

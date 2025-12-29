@@ -32,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final auth = context.read<AuthProvider>();
 
     await auth.login(
-      db: 'odoo2',
+      db: 'test',
       login: _emailCtrl.text.trim(),
       password: _passwordCtrl.text.trim(),
     );
@@ -236,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           //     ),
                           //     GestureDetector(
                           //       onTap: () {
-                          //         // TODO: navigate to sign up if you want
+                          //
                           //       },
                           //       child: const Text(
                           //         "SIGN UP",

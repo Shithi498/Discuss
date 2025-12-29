@@ -36,14 +36,14 @@ void main() {
         ChangeNotifierProvider(
           create: (_) => AuthProvider(
             repo: OdooAuthRepo(
-              baseUrl: 'http://192.168.50.76:8069',
+              baseUrl: 'https://demo.kendroo.com',
             ),
           ),
         ),
 
         ProxyProvider<AuthProvider, ReactionRepo>(
           update: (_, auth, __) {
-            const baseUrl = 'http://192.168.50.76:8069';
+            const baseUrl = 'https://demo.kendroo.com';
             final cookie = auth.sessionCookie ?? ""; // make sure this exists
             return ReactionRepo(baseUrl: baseUrl, sessionCookie: cookie);
           },
@@ -51,7 +51,7 @@ void main() {
 
         ProxyProvider<AuthProvider, MarkedReadRepo>(
           update: (_, auth, __) => MarkedReadRepo(
-            baseUrl: "http://192.168.50.76:8069",
+            baseUrl: "https://demo.kendroo.com",
             sessionCookie: auth.sessionCookie ?? "",
           ),
         ),
@@ -62,7 +62,7 @@ void main() {
         ),
         ChangeNotifierProxyProvider<ReactionRepo, ReactionProvider>(
           create: (_) => ReactionProvider(
-            repo: ReactionRepo(baseUrl: 'http://192.168.50.76:8069', sessionCookie: ""),
+            repo: ReactionRepo(baseUrl: 'https://demo.kendroo.com', sessionCookie: ""),
           ),
           update: (_, repo, prev) {
             // keep previous instance if you want; simplest is new
@@ -72,7 +72,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, AttachmentProvider>(
           create: (_) => AttachmentProvider(
             repo: AttachmentRepo(
-              baseUrl: 'http://192.168.50.76:8069',
+              baseUrl: 'https://demo.kendroo.com',
               sessionCookie: '',
             ),
           ),
@@ -82,7 +82,7 @@ void main() {
 
             return AttachmentProvider(
               repo: AttachmentRepo(
-                baseUrl: 'http://192.168.50.76:8069',
+                baseUrl: 'https://demo.kendroo.com',
                 sessionCookie: cookie,
               ),
             );
@@ -91,7 +91,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, DeleteMessageProvider>(
           create: (_) => DeleteMessageProvider(
             repo: DeleteMessageRepo(
-              baseUrl: 'http://192.168.50.76:8069',
+              baseUrl: 'https://demo.kendroo.com',
               sessionCookie: '',
             ),
           ),
@@ -101,7 +101,7 @@ void main() {
 
             return DeleteMessageProvider(
               repo: DeleteMessageRepo (
-                baseUrl: 'http://192.168.50.76:8069',
+                baseUrl: 'https://demo.kendroo.com',
                 sessionCookie: cookie,
               ),
             );
@@ -110,7 +110,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, AddParticipantProvider>(
           create: (_) => AddParticipantProvider(
             repo: AddParticipantRepo(
-              baseUrl: 'http://192.168.50.76:8069',
+              baseUrl: 'https://demo.kendroo.com',
               sessionCookie: '',
             ),
           ),
@@ -120,7 +120,7 @@ void main() {
 
             return AddParticipantProvider(
               repo: AddParticipantRepo (
-                baseUrl: 'http://192.168.50.76:8069',
+                baseUrl: 'https://demo.kendroo.com',
                 sessionCookie: cookie,
               ),
             );
@@ -129,7 +129,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, ChannelParticipantsProvider>(
           create: (_) => ChannelParticipantsProvider(
             repo: ChannelParticipantsRepo(
-              baseUrl: 'http://192.168.50.76:8069',
+              baseUrl: 'https://demo.kendroo.com',
               sessionCookie: '',
             ),
           ),
@@ -139,7 +139,7 @@ void main() {
 
             return ChannelParticipantsProvider(
               repo: ChannelParticipantsRepo (
-                baseUrl: 'http://192.168.50.76:8069',
+                baseUrl: 'https://demo.kendroo.com',
                 sessionCookie: cookie,
               ),
             );
@@ -148,7 +148,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, ThreadProvider>(
           create: (_) => ThreadProvider(
             repo: ThreadRepo(
-              baseUrl: 'http://192.168.50.76:8069',
+              baseUrl: 'https://demo.kendroo.com',
               sessionCookie: '',
             ),
           ),
@@ -158,7 +158,7 @@ void main() {
 
             return ThreadProvider(
               repo: ThreadRepo(
-                baseUrl: 'http://192.168.50.76:8069',
+                baseUrl: 'https://demo.kendroo.com',
                 sessionCookie: cookie,
               ),
             );
@@ -168,7 +168,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, LoadMessageProvider>(
           create: (_) => LoadMessageProvider(
             repo: LoadMessageRepo(
-              baseUrl: 'http://192.168.50.76:8069',
+              baseUrl: 'https://demo.kendroo.com',
               sessionCookie: '',
             ),
           ),
@@ -178,7 +178,7 @@ void main() {
 
             return LoadMessageProvider(
               repo: LoadMessageRepo(
-                baseUrl: 'http://192.168.50.76:8069',
+                baseUrl: 'https://demo.kendroo.com',
                 sessionCookie: cookie,
               ),
             );
@@ -188,7 +188,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, MessageProvider>(
           create: (_) => MessageProvider(
             repo: MessageRepo(
-              baseUrl: 'http://192.168.50.76:8069',
+              baseUrl: 'https://demo.kendroo.com',
               sessionCookie: '',
             ),
           ),
@@ -198,7 +198,7 @@ void main() {
 
             return MessageProvider(
               repo: MessageRepo(
-                baseUrl: 'http://192.168.50.76:8069',
+                baseUrl: 'https://demo.kendroo.com',
                 sessionCookie: cookie,
               ),
             );
@@ -208,7 +208,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, ReadMessageProvider>(
           create: (_) => ReadMessageProvider(
             repo: ReadMessageRepo(
-              baseUrl: 'http://192.168.50.76:8069',
+              baseUrl: 'https://demo.kendroo.com',
               sessionCookie: '',
             ),
           ),
@@ -218,7 +218,7 @@ void main() {
 
             return ReadMessageProvider(
               repo: ReadMessageRepo(
-                baseUrl: 'http://192.168.50.76:8069',
+                baseUrl: 'https://demo.kendroo.com',
                 sessionCookie: cookie,
               ),
             );
@@ -228,7 +228,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, SearchProvider>(
           create: (_) => SearchProvider(
             repo: SearchRepo(
-              baseUrl: 'http://192.168.50.76:8069',
+              baseUrl: 'https://demo.kendroo.com',
               sessionCookie: '',
             ),
           ),
@@ -238,7 +238,7 @@ void main() {
 
             return SearchProvider(
               repo: SearchRepo(
-                baseUrl: 'http://192.168.50.76:8069',
+                baseUrl: 'https://demo.kendroo.com',
                 sessionCookie: cookie,
               ),
             );
@@ -248,7 +248,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, ChatProvider>(
           create: (_) => ChatProvider(
             repo: ChatRepo(
-              baseUrl: 'http://192.168.50.76:8069',
+              baseUrl: 'https://demo.kendroo.com',
               sessionCookie: '',
             ),
           ),
@@ -258,7 +258,7 @@ void main() {
 
             return ChatProvider(
               repo: ChatRepo(
-                baseUrl: 'http://192.168.50.76:8069',
+                baseUrl: 'https://demo.kendroo.com',
                 sessionCookie: cookie,
               ),
             );

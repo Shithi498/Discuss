@@ -32,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final auth = context.read<AuthProvider>();
 
     await auth.login(
-      db: 'odoo2',
+      db: 'odoo3',
       login: _emailCtrl.text.trim(),
       password: _passwordCtrl.text.trim(),
     );
@@ -123,14 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           filterQuality: FilterQuality.low,
                                         ),
                                         const SizedBox(height: 10),
-                                        const Text(
-                                          'Welcome Back!',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 18,
-                                          ),
-                                        ),
+
                                       ],
                                     ),
                                   ),
@@ -243,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           //     ),
                           //     GestureDetector(
                           //       onTap: () {
-                          //         // TODO: navigate to sign up if you want
+                          //
                           //       },
                           //       child: const Text(
                           //         "SIGN UP",

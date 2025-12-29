@@ -101,4 +101,46 @@ print(response.body);
         .map((t) => MessageThread.fromJson(t as Map<String, dynamic>))
         .toList();
   }
+
+  Future<List<MessageThread>> channelfetchThreads() async {
+
+    if (sessionCookie.trim().isEmpty) {
+      return [];
+    }
+
+    final url = Uri.parse("$baseUrl/api/discuss/channels");
+
+
+    final body = jsonEncode({
+      "jsonrpc": "2.0",
+      "params": {
+        "thread_type": "channel",
+      },
+    });
+
+    final response = await http.post(
+      url,
+      headers: _headers,
+      body: body,
+    );
+    print("channel thread");
+    print(response.body);
+    if (response.statusCode != 200) {
+      throw Exception(
+        "Failed to load threads. Status: ${response.statusCode}. Body: ${response.body}",
+      );
+    }
+
+    final Map<String, dynamic> decoded = jsonDecode(response.body);
+    final Map<String, dynamic> root = decoded['result'] is Map<String, dynamic>
+        ? decoded['result'] as Map<String, dynamic>
+        : decoded;
+
+    final List<dynamic> threadsJson =
+        root['threads'] as List<dynamic>? ?? [];
+
+    return threadsJson
+        .map((t) => MessageThread.fromJson(t as Map<String, dynamic>))
+        .toList();
+  }
 }
