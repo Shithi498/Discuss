@@ -5,7 +5,7 @@ import '../model/channel_participants_model.dart';
 
 class ChannelParticipantsRepo {
   final String baseUrl;
-  final String sessionCookie; // e.g. "session_id=xyz"
+  final String sessionCookie;
 
   ChannelParticipantsRepo({
     required this.baseUrl,

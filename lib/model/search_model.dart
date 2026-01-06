@@ -6,11 +6,14 @@ class Search {
   final String? image;
 final String? email;
 final String? phone;
+
   Search({
     required this.id,
     required this.name,
     this.partnerId,
-    this.userId, this.image, this.email, this.phone,
+    this.userId,
+    this.image,
+    this.email, this.phone,
   });
 
 

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../model/search_model.dart';
 
-
 class SearchRepo {
   final String baseUrl;
   final String sessionCookie;
@@ -17,7 +16,6 @@ class SearchRepo {
     "Accept": "application/json",
     "Cookie": sessionCookie,
   };
-
 
 
   Future<List<Search>> searchPartners({String query = ""}) async {

@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/add_participant_provider.dart';
+import '../provider/auth_provider.dart';
 import '../provider/chat_provider.dart';
 import '../provider/search_provider.dart';
 import 'chat_page.dart';
@@ -41,6 +43,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     final prov = context.watch<SearchProvider>();
     final addProv = context.watch<AddParticipantProvider>();
+    final auth = context.watch<AuthProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -81,16 +84,63 @@ class _SearchPageState extends State<SearchPage> {
                   itemBuilder: (_, i) {
                     final p = prov.partners[i];
                     final isSelected = _selectedIds.contains(p.id);
-
+                    print("Search image");
+print(p.image); final String? url = p.image;
+                    final String? cookie = auth.sessionCookie;
+                    debugPrint("IMG_URL => $url");
+                    debugPrint("COOKIE  => $cookie");
+                    print("Imageurl");
+                    print(p.image);
                     return ListTile(
                       leading: isMore
                           ? SelectCircle(isSelected: isSelected)
-                          :      CircleAvatar(
+                       //  :      CircleAvatar(
                         // backgroundColor: Colors.grey.shade300,
-                        backgroundImage: (p.image != null && p.image!.isNotEmpty)
-                            ? NetworkImage(p.image!)
-                            : const AssetImage("assets/images/user_placeholder.jpg")
-                        as ImageProvider,
+                      //  backgroundImage:
+                        //(p.image != null && p.image!.isNotEmpty)
+                          //   NetworkImage(p.image ?? '')
+                         //   : const AssetImage("assets/images/user_placeholder.jpg")
+                      //  as ImageProvider,
+                   //   ),
+                     : SizedBox(
+                        //width: avatarR * 2,
+                       // height: avatarR * 2,
+                        child: ClipOval(
+                          child: (url != null && url.isNotEmpty)
+                              ? CachedNetworkImage(
+                            imageUrl: url,
+                            httpHeaders: {
+                              // ✅ Odoo needs: Cookie: session_id=xxxx
+                              if (cookie != null && cookie.isNotEmpty) 'Cookie': cookie,
+
+                              // ✅ helps prevent HTML response
+                              'Accept': 'image/*',
+                              'User-Agent': 'Flutter',
+                            },
+                            fit: BoxFit.cover,
+
+                            // ✅ better: request a small image (if your URL is image_1920, change it when building url)
+                            // memCacheWidth/Height reduce decode load for avatars
+                        //    memCacheWidth: (avatarR * 2).round() * 3,  // devicePixelRatio safe-ish
+                         //   memCacheHeight: (avatarR * 2).round() * 3,
+
+                            placeholder: (_, __) => Container(
+                              color: Colors.grey.shade300,
+                              alignment: Alignment.center,
+                              child: const Icon(Icons.person, color: Colors.white),
+                            ),
+                            errorWidget: (_, __, ___) => Container(
+                              color: Colors.grey.shade300,
+                              alignment: Alignment.center,
+                              child: const Icon(Icons.person, color: Colors.white),
+                            ),
+                          )
+                              : Container(
+                            color: Colors.grey.shade300,
+                            alignment: Alignment.center,
+                            child: const Icon(Icons.person, color: Colors.white),
+                          ),
+                        ),
                       ),
                       title: Text(p.name),
                       subtitle: Text("ID: ${p.id}"),
@@ -165,7 +215,7 @@ class _SearchPageState extends State<SearchPage> {
 
                   bool allOk = true;
 
-                  // Add each selected partner
+
                   for (final partnerId in _selectedIds) {
                     final ok = await context
                         .read<AddParticipantProvider>()

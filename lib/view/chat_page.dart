@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discusskendroo/view/inbox_page.dart';
 import 'package:discusskendroo/view/profile_details_page.dart';
 import 'package:discusskendroo/view/search_page.dart';
@@ -203,7 +204,6 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
   }
-
 
 
   bool _canSend() {
@@ -466,7 +466,8 @@ final searchProv = context.watch<SearchProvider>();
       body: Column(
         children: [
           Expanded(
-            child: loadProv.loading && messages.isEmpty
+            child:
+            loadProv.loading && messages.isEmpty
                 ? const Center(child: CircularProgressIndicator())
                 : messages.isEmpty
                 ? const Center(child: Text("No messages yet"))
@@ -499,7 +500,12 @@ print("isRead :$isRead");
                     w * (smallPhone ? 0.78 : 0.72);
                 final double hPad = smallPhone ? 10 : 12;
                 final double vPad = smallPhone ? 7 : 8;
-
+                final String? url = msg?.image_url;
+                final String? cookie = auth.sessionCookie;
+                debugPrint("IMG_URL => $url");
+                debugPrint("COOKIE  => $cookie");
+                print("Imageurl");
+                print(msg?.image_url);
                 return GestureDetector(
                   onLongPress: () async {
                     final myEmoji = msg.reactions
@@ -641,18 +647,58 @@ print("isRead :$isRead");
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             if (!isMine)
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 4, right: 6),
-                                child: CircleAvatar(
-                                  radius: avatarR,
-                                  backgroundColor:
-                                  Colors.grey.shade300,
-                                  backgroundImage: const AssetImage(
-                                    "assets/images/user_placeholder.jpg",
+                              // Padding(
+                              //   padding: const EdgeInsets.only(
+                              //       left: 4, right: 6),
+                              //   child: CircleAvatar(
+                              //     radius: avatarR,
+                              //     backgroundColor:
+                              //     Colors.grey.shade300,
+                              //     backgroundImage:  NetworkImage(
+                              //       msg.image_url,
+                              //     ),
+                              //   ),
+                              // ),
+                          SizedBox(
+                              width: avatarR * 2,
+                              height: avatarR * 2,
+                              child: ClipOval(
+                                child: (url != null && url.isNotEmpty)
+                                    ? CachedNetworkImage(
+                                  imageUrl: url,
+                                  httpHeaders: {
+                                    // ✅ Odoo needs: Cookie: session_id=xxxx
+                                    if (cookie != null && cookie.isNotEmpty) 'Cookie': cookie,
+
+                                    // ✅ helps prevent HTML response
+                                    'Accept': 'image/*',
+                                    'User-Agent': 'Flutter',
+                                  },
+                                  fit: BoxFit.cover,
+
+                                  // ✅ better: request a small image (if your URL is image_1920, change it when building url)
+                                  // memCacheWidth/Height reduce decode load for avatars
+                                  memCacheWidth: (avatarR * 2).round() * 3,  // devicePixelRatio safe-ish
+                                  memCacheHeight: (avatarR * 2).round() * 3,
+
+                                  placeholder: (_, __) => Container(
+                                    color: Colors.grey.shade300,
+                                    alignment: Alignment.center,
+                                    child: const Icon(Icons.person, color: Colors.white),
                                   ),
+                                  errorWidget: (_, __, ___) => Container(
+                                    color: Colors.grey.shade300,
+                                    alignment: Alignment.center,
+                                    child: const Icon(Icons.person, color: Colors.white),
+                                  ),
+                                )
+                                    : Container(
+                                  color: Colors.grey.shade300,
+                                  alignment: Alignment.center,
+                                  child: const Icon(Icons.person, color: Colors.white),
                                 ),
                               ),
+                            ),
                             Flexible(
                               child: ConstrainedBox(
                                 constraints: BoxConstraints(
@@ -738,8 +784,8 @@ print("isRead :$isRead");
 
               },
             ),
-          ),
 
+         ),
 
 
           if (loadProv.error != null)
@@ -759,6 +805,7 @@ print("isRead :$isRead");
                 style: const TextStyle(color: Colors.black, fontSize: 12),
               ),
             ),
+
 
 
           SafeArea(
@@ -798,7 +845,7 @@ print("isRead :$isRead");
                   ),
                 Padding(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
                   child: Row(
                     children: [
                       IconButton(
@@ -841,6 +888,7 @@ print("isRead :$isRead");
               ],
             ),
           ),
+
         ],
       ),
     );

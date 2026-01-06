@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../model/chat_model.dart';
 
-
 class ChatRepo {
   final String baseUrl;
   final String sessionCookie;

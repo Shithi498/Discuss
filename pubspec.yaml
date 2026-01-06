@@ -42,8 +42,14 @@ dependencies:
   url_launcher: ^6.3.0
   photo_view: ^0.15.0
   open_filex: ^4.4.0
+  shared_preferences: ^2.5.3
+  flutter_launcher_icons: ^0.13.1
+  cached_network_image: ^3.4.1
 
-
+flutter_launcher_icons:
+    android: true
+    ios: true
+    image_path: "assets/images/images.png"
 
 
 dev_dependencies:

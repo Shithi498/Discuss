@@ -73,14 +73,12 @@ class ThreadProvider extends ChangeNotifier {
   List<MessageThread> get allThreads {
     final all = <MessageThread>[...chatThreads, ...groupThreads];
 
-    // If both have same thread id sometimes, remove duplicates:
+
     final map = <int, MessageThread>{};
     for (final t in all) {
       map[t.id] = t;
     }
     final merged = map.values.toList();
-
-    // Sort newest first if you have a date
   //  merged.sort((a, b) => (b.lastMessageDate ?? "").compareTo(a.lastMessageDate ?? ""));
     return merged;
   }

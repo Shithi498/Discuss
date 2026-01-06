@@ -10,6 +10,7 @@ class loadMessage {
   final DateTime createdDate;
   final List<dynamic> attachments;
   final List<Reaction> reactions;
+  final String image_url;
 
   loadMessage({
     required this.id,
@@ -19,14 +20,14 @@ class loadMessage {
     required this.messageType,
     required this.isRead,
     required this.createdDate,
-    required this.attachments, required this.authorPartnerId, required this.authorUserId, required this.reactions,
+    required this.attachments, required this.authorPartnerId, required this.authorUserId, required this.reactions, required this.image_url,
   });
 
   factory loadMessage.fromJson(Map<String, dynamic> json) {
     final rawDate = json['created_date'] as String?;
     DateTime parsedDate = DateTime.now();
     if (rawDate != null) {
-      // Example: "2025-12-04 13:05:18"
+
       final isoLike = rawDate.replaceFirst(' ', 'T');
       parsedDate = DateTime.tryParse(isoLike) ?? DateTime.now();
     }
@@ -45,6 +46,7 @@ class loadMessage {
       reactions: (json['reactions'] as List<dynamic>? ?? [])
           .map((e) => Reaction.fromJson(e as Map<String, dynamic>))
           .toList(),
+      image_url: json['author_image_url'] as String
 
     );
   }
@@ -61,7 +63,7 @@ class loadMessageThreadResult {
   });
 
   factory loadMessageThreadResult.fromJson(Map<String, dynamic> json) {
-    // API may return either at root or under "result"
+
     final result = json['result'] is Map<String, dynamic>
         ? json['result'] as Map<String, dynamic>
         : json;

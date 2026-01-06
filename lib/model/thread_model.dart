@@ -3,12 +3,14 @@ class Participant {
   final String name;
   final int? partnerId;
   final int? userId;
+  final String imageUrl;
 
   Participant({
     required this.id,
     required this.name,
     this.partnerId,
     this.userId,
+    required this.imageUrl,
   });
 
   factory Participant.fromJson(Map<String, dynamic> json) {
@@ -17,6 +19,7 @@ class Participant {
       name: json['name'] as String,
       partnerId: json['partner_id'] as int?,
       userId: json['user_id'] as int?,
+      imageUrl: json['image_url'] as String
     );
   }
 }
@@ -111,31 +114,66 @@ class MessageThread {
     );
   }
 
+  // factory MessageThread.fromJson(Map<String, dynamic> json) {
+  //   final rawDate = json['last_message_date'] as String?;
+  //   DateTime? parsedDate;
+  //   if (rawDate != null) {
+  //     final isoLike = rawDate.replaceFirst(' ', 'T');
+  //     parsedDate = DateTime.tryParse(isoLike);
+  //   }
+  //
+  //   final participantsJson = (json['participants'] as List<dynamic>? ?? []);
+  //
+  //   return MessageThread(
+  //     id: json['id'] as int,
+  //     name: json['name'] as String,
+  //     type: json['type'] as String,
+  //     participants: participantsJson
+  //         .map((p) => Participant.fromJson(p as Map<String, dynamic>))
+  //         .toList(),
+  //     lastMessage: json['last_message'] as String?,
+  //     lastMessageDate: parsedDate,
+  //
+  //     lastMessageId: json['last_message_id'] as int?,
+  //
+  //     unreadCount: (json['unread_count'] ?? 0) as int,
+  //   );
+  // }
+
   factory MessageThread.fromJson(Map<String, dynamic> json) {
-    final rawDate = json['last_message_date'] as String?;
+    final rawDate = json['last_message_date'];
+
     DateTime? parsedDate;
-    if (rawDate != null) {
+    if (rawDate is String && rawDate.isNotEmpty) {
       final isoLike = rawDate.replaceFirst(' ', 'T');
       parsedDate = DateTime.tryParse(isoLike);
     }
 
-    final participantsJson = (json['participants'] as List<dynamic>? ?? []);
+    final participantsJson =
+    (json['participants'] as List<dynamic>? ?? []);
 
     return MessageThread(
       id: json['id'] as int,
-      name: json['name'] as String,
-      type: json['type'] as String,
+
+      name: (json['name'] ?? '') as String,
+
+      type: json['type'] as String?,
+
       participants: participantsJson
           .map((p) => Participant.fromJson(p as Map<String, dynamic>))
           .toList(),
-      lastMessage: json['last_message'] as String?,
+
+      lastMessage: (json['last_message'] as String?)?.isNotEmpty == true
+          ? json['last_message'] as String
+          : null,
+
       lastMessageDate: parsedDate,
 
-      // ✅ expecting backend provides this:
       lastMessageId: json['last_message_id'] as int?,
 
       unreadCount: (json['unread_count'] ?? 0) as int,
     );
   }
+
 }
 

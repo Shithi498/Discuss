@@ -4,6 +4,7 @@ import 'package:discusskendroo/provider/auth_provider.dart';
 import 'package:discusskendroo/provider/channel_participants_provider.dart';
 import 'package:discusskendroo/provider/chat_provider.dart';
 import 'package:discusskendroo/provider/delete_msg_provider.dart';
+import 'package:discusskendroo/provider/employee_provider.dart';
 import 'package:discusskendroo/provider/load_message_provider.dart';
 import 'package:discusskendroo/provider/marked_read_provider.dart';
 import 'package:discusskendroo/provider/message_provider.dart';
@@ -30,20 +31,22 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  String url ="http://192.168.50.76:8069";
+//  String url ="https://demo.kendroo.com";
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
           create: (_) => AuthProvider(
             repo: OdooAuthRepo(
-              baseUrl: 'https://demo.kendroo.com',
+              baseUrl: url,
             ),
           ),
         ),
 
         ProxyProvider<AuthProvider, ReactionRepo>(
           update: (_, auth, __) {
-            const baseUrl = 'https://demo.kendroo.com';
+            final baseUrl = url;
             final cookie = auth.sessionCookie ?? ""; // make sure this exists
             return ReactionRepo(baseUrl: baseUrl, sessionCookie: cookie);
           },
@@ -51,7 +54,7 @@ void main() {
 
         ProxyProvider<AuthProvider, MarkedReadRepo>(
           update: (_, auth, __) => MarkedReadRepo(
-            baseUrl: "https://demo.kendroo.com",
+            baseUrl: url,
             sessionCookie: auth.sessionCookie ?? "",
           ),
         ),
@@ -62,7 +65,7 @@ void main() {
         ),
         ChangeNotifierProxyProvider<ReactionRepo, ReactionProvider>(
           create: (_) => ReactionProvider(
-            repo: ReactionRepo(baseUrl: 'https://demo.kendroo.com', sessionCookie: ""),
+            repo: ReactionRepo(baseUrl: url, sessionCookie: ""),
           ),
           update: (_, repo, prev) {
             // keep previous instance if you want; simplest is new
@@ -72,7 +75,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, AttachmentProvider>(
           create: (_) => AttachmentProvider(
             repo: AttachmentRepo(
-              baseUrl: 'https://demo.kendroo.com',
+              baseUrl: url,
               sessionCookie: '',
             ),
           ),
@@ -82,7 +85,7 @@ void main() {
 
             return AttachmentProvider(
               repo: AttachmentRepo(
-                baseUrl: 'https://demo.kendroo.com',
+                baseUrl:url,
                 sessionCookie: cookie,
               ),
             );
@@ -91,7 +94,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, DeleteMessageProvider>(
           create: (_) => DeleteMessageProvider(
             repo: DeleteMessageRepo(
-              baseUrl: 'https://demo.kendroo.com',
+              baseUrl: url,
               sessionCookie: '',
             ),
           ),
@@ -101,7 +104,7 @@ void main() {
 
             return DeleteMessageProvider(
               repo: DeleteMessageRepo (
-                baseUrl: 'https://demo.kendroo.com',
+                baseUrl: url,
                 sessionCookie: cookie,
               ),
             );
@@ -110,7 +113,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, AddParticipantProvider>(
           create: (_) => AddParticipantProvider(
             repo: AddParticipantRepo(
-              baseUrl: 'https://demo.kendroo.com',
+              baseUrl: url,
               sessionCookie: '',
             ),
           ),
@@ -120,7 +123,7 @@ void main() {
 
             return AddParticipantProvider(
               repo: AddParticipantRepo (
-                baseUrl: 'https://demo.kendroo.com',
+                baseUrl: url,
                 sessionCookie: cookie,
               ),
             );
@@ -129,7 +132,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, ChannelParticipantsProvider>(
           create: (_) => ChannelParticipantsProvider(
             repo: ChannelParticipantsRepo(
-              baseUrl: 'https://demo.kendroo.com',
+              baseUrl: url,
               sessionCookie: '',
             ),
           ),
@@ -139,7 +142,7 @@ void main() {
 
             return ChannelParticipantsProvider(
               repo: ChannelParticipantsRepo (
-                baseUrl: 'https://demo.kendroo.com',
+                baseUrl: url,
                 sessionCookie: cookie,
               ),
             );
@@ -148,7 +151,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, ThreadProvider>(
           create: (_) => ThreadProvider(
             repo: ThreadRepo(
-              baseUrl: 'https://demo.kendroo.com',
+              baseUrl: url,
               sessionCookie: '',
             ),
           ),
@@ -158,7 +161,7 @@ void main() {
 
             return ThreadProvider(
               repo: ThreadRepo(
-                baseUrl: 'https://demo.kendroo.com',
+                baseUrl: url,
                 sessionCookie: cookie,
               ),
             );
@@ -168,7 +171,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, LoadMessageProvider>(
           create: (_) => LoadMessageProvider(
             repo: LoadMessageRepo(
-              baseUrl: 'https://demo.kendroo.com',
+              baseUrl: url,
               sessionCookie: '',
             ),
           ),
@@ -178,7 +181,7 @@ void main() {
 
             return LoadMessageProvider(
               repo: LoadMessageRepo(
-                baseUrl: 'https://demo.kendroo.com',
+                baseUrl:url,
                 sessionCookie: cookie,
               ),
             );
@@ -188,7 +191,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, MessageProvider>(
           create: (_) => MessageProvider(
             repo: MessageRepo(
-              baseUrl: 'https://demo.kendroo.com',
+              baseUrl: url,
               sessionCookie: '',
             ),
           ),
@@ -198,7 +201,7 @@ void main() {
 
             return MessageProvider(
               repo: MessageRepo(
-                baseUrl: 'https://demo.kendroo.com',
+                baseUrl: url,
                 sessionCookie: cookie,
               ),
             );
@@ -208,7 +211,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, ReadMessageProvider>(
           create: (_) => ReadMessageProvider(
             repo: ReadMessageRepo(
-              baseUrl: 'https://demo.kendroo.com',
+              baseUrl: url,
               sessionCookie: '',
             ),
           ),
@@ -218,7 +221,7 @@ void main() {
 
             return ReadMessageProvider(
               repo: ReadMessageRepo(
-                baseUrl: 'https://demo.kendroo.com',
+                baseUrl: url,
                 sessionCookie: cookie,
               ),
             );
@@ -228,7 +231,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, SearchProvider>(
           create: (_) => SearchProvider(
             repo: SearchRepo(
-              baseUrl: 'https://demo.kendroo.com',
+              baseUrl:url,
               sessionCookie: '',
             ),
           ),
@@ -238,7 +241,27 @@ void main() {
 
             return SearchProvider(
               repo: SearchRepo(
-                baseUrl: 'https://demo.kendroo.com',
+                baseUrl: url,
+                sessionCookie: cookie,
+              ),
+            );
+          },
+        ),
+
+        ChangeNotifierProxyProvider<AuthProvider, SearchProvider>(
+          create: (_) => SearchProvider(
+            repo: SearchRepo(
+              baseUrl: url,
+              sessionCookie: '',
+            ),
+          ),
+
+          update: (_, auth, previous) {
+            final cookie = auth.sessionCookie ?? '';
+
+            return SearchProvider(
+              repo: SearchRepo(
+                baseUrl: url,
                 sessionCookie: cookie,
               ),
             );
@@ -248,7 +271,7 @@ void main() {
         ChangeNotifierProxyProvider<AuthProvider, ChatProvider>(
           create: (_) => ChatProvider(
             repo: ChatRepo(
-              baseUrl: 'https://demo.kendroo.com',
+              baseUrl: url,
               sessionCookie: '',
             ),
           ),
@@ -258,11 +281,16 @@ void main() {
 
             return ChatProvider(
               repo: ChatRepo(
-                baseUrl: 'https://demo.kendroo.com',
+                baseUrl: url,
                 sessionCookie: cookie,
               ),
             );
           },
+        ),
+
+        ChangeNotifierProxyProvider<AuthProvider, EmployeeProvider>(
+          create: (_) => EmployeeProvider(),
+          update: (_, auth, __) => EmployeeProvider(auth:auth),
         ),
       ],
       child: const MyApp(),
@@ -279,8 +307,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-   //   home: const LoginScreen(),
-        home: const PostLoginSplash()
+      home: const LoginScreen(),
+     //   home: const PostLoginSplash()
     );
   }
 }
