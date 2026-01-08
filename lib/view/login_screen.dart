@@ -169,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final auth = context.read<AuthProvider>();
 
     await auth.login(
-      db: 'odoo3',
+      db: 'odoo4',
       login: _emailCtrl.text.trim(),
       password: _passwordCtrl.text.trim(),
     );

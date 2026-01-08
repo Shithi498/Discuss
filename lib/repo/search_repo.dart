@@ -17,9 +17,8 @@ class SearchRepo {
     "Cookie": sessionCookie,
   };
 
-
   Future<List<Search>> searchPartners({String query = ""}) async {
-    final url = Uri.parse("$baseUrl/api/messaging/partners/search");
+    final url = Uri.parse("$baseUrl/api/discuss/partners/search");
 
     final payload = {
       "jsonrpc": "2.0",

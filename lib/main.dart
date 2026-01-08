@@ -47,7 +47,7 @@ void main() {
         ProxyProvider<AuthProvider, ReactionRepo>(
           update: (_, auth, __) {
             final baseUrl = url;
-            final cookie = auth.sessionCookie ?? ""; // make sure this exists
+            final cookie = auth.sessionCookie ?? "";
             return ReactionRepo(baseUrl: baseUrl, sessionCookie: cookie);
           },
         ),
@@ -68,7 +68,7 @@ void main() {
             repo: ReactionRepo(baseUrl: url, sessionCookie: ""),
           ),
           update: (_, repo, prev) {
-            // keep previous instance if you want; simplest is new
+
             return ReactionProvider(repo: repo);
           },
         ),

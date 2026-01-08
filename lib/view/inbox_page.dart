@@ -282,7 +282,6 @@ class _InboxPageState extends State<InboxPage> {
                     separatorBuilder: (_, __) => const Divider(height: 1),
                     itemBuilder: (context, index)  {
                       final thread = threads[index];
-
                       final subtitle = thread.lastMessage ?? 'No messages yet';
                       final lastDate = thread.lastMessageDate != null
                           ? '${thread.lastMessageDate}'
@@ -293,8 +292,6 @@ class _InboxPageState extends State<InboxPage> {
                       final currentPartnerId = auth.user?.partnerId;
 
                       Participant? partner;
-
-
                       try {
                         partner = thread.participants.firstWhere(
                               (p) =>
@@ -355,18 +352,12 @@ class _InboxPageState extends State<InboxPage> {
                               ? CachedNetworkImage(
                             imageUrl: url,
                             httpHeaders: {
-                              // ✅ Odoo needs: Cookie: session_id=xxxx
                               if (cookie != null && cookie.isNotEmpty) 'Cookie': cookie,
-
-                              // ✅ helps prevent HTML response
                               'Accept': 'image/*',
                               'User-Agent': 'Flutter',
                             },
                             fit: BoxFit.cover,
-
-                            // ✅ better: request a small image (if your URL is image_1920, change it when building url)
-                            // memCacheWidth/Height reduce decode load for avatars
-                            memCacheWidth: (avatarR * 2).round() * 3,  // devicePixelRatio safe-ish
+                            memCacheWidth: (avatarR * 2).round() * 3,
                             memCacheHeight: (avatarR * 2).round() * 3,
 
                             placeholder: (_, __) => Container(
@@ -441,7 +432,6 @@ class _InboxPageState extends State<InboxPage> {
                           ),
                         ),
                         onTap: () {
-
                           Navigator.push(
                             context,
                             MaterialPageRoute(

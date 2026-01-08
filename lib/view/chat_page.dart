@@ -77,8 +77,6 @@ class _ChatPageState extends State<ChatPage> {
       await Future.delayed(const Duration(milliseconds: 50));
       _scrollToBottom();
     });
-
-
   }
 
   @override
@@ -98,8 +96,6 @@ class _ChatPageState extends State<ChatPage> {
     return 'http://192.168.50.76:8069/api/discuss/attachment/$id';
   }
 
-
-
   void _showLocalImagePreview(File file) {
     Navigator.push(
       context,
@@ -114,7 +110,6 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
   }
-
 
   Widget _buildAttachments({
     required List<dynamic> attachments,
@@ -266,7 +261,7 @@ class _ChatPageState extends State<ChatPage> {
     for (final f in res.files) {
       String? finalPath = f.path;
 
-      // If path is null, save from stream to temp file
+
       if ((finalPath == null || finalPath.isEmpty) && f.readStream != null) {
         final safeName = f.name.isNotEmpty ? f.name : 'attachment';
         final uniqueName = '${DateTime.now().microsecondsSinceEpoch}_$safeName';
@@ -481,9 +476,9 @@ final searchProv = context.watch<SearchProvider>();
                 (myUserId != null && msg.authorId == myUserId);
 
             //    final bool isRead = readProv.isMessageRead(msg.id);
-                final bool isRead = msg.isRead;
+                final int isRead = msg.read_by_count;
 print("isRead :$isRead");
-                if (!isMine && isRead) {
+                if (!isMine && isRead>=1) {
                   print("read repo called");
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     context
@@ -667,18 +662,15 @@ print("isRead :$isRead");
                                     ? CachedNetworkImage(
                                   imageUrl: url,
                                   httpHeaders: {
-                                    // ✅ Odoo needs: Cookie: session_id=xxxx
+
                                     if (cookie != null && cookie.isNotEmpty) 'Cookie': cookie,
 
-                                    // ✅ helps prevent HTML response
                                     'Accept': 'image/*',
                                     'User-Agent': 'Flutter',
                                   },
                                   fit: BoxFit.cover,
 
-                                  // ✅ better: request a small image (if your URL is image_1920, change it when building url)
-                                  // memCacheWidth/Height reduce decode load for avatars
-                                  memCacheWidth: (avatarR * 2).round() * 3,  // devicePixelRatio safe-ish
+                                  memCacheWidth: (avatarR * 2).round() * 3,
                                   memCacheHeight: (avatarR * 2).round() * 3,
 
                                   placeholder: (_, __) => Container(
@@ -757,7 +749,7 @@ print("isRead :$isRead");
                                 ),
                               ),
                             ),
-                            if (isMine && isRead)
+                            if (isMine && isRead>=1)
                               Padding(
                                 padding: const EdgeInsets.only(
                                     right: 4, bottom: 4),

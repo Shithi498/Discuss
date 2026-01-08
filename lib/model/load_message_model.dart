@@ -11,6 +11,7 @@ class loadMessage {
   final List<dynamic> attachments;
   final List<Reaction> reactions;
   final String image_url;
+  final int read_by_count;
 
   loadMessage({
     required this.id,
@@ -20,7 +21,7 @@ class loadMessage {
     required this.messageType,
     required this.isRead,
     required this.createdDate,
-    required this.attachments, required this.authorPartnerId, required this.authorUserId, required this.reactions, required this.image_url,
+    required this.attachments, required this.authorPartnerId, required this.authorUserId, required this.reactions, required this.image_url,required this.read_by_count
   });
 
   factory loadMessage.fromJson(Map<String, dynamic> json) {
@@ -46,7 +47,8 @@ class loadMessage {
       reactions: (json['reactions'] as List<dynamic>? ?? [])
           .map((e) => Reaction.fromJson(e as Map<String, dynamic>))
           .toList(),
-      image_url: json['author_image_url'] as String
+      image_url: json['author_image_url'] as String,
+        read_by_count: json['read_by_count'] as int
 
     );
   }

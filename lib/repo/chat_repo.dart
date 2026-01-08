@@ -29,13 +29,13 @@ class ChatRepo {
       "params": {
         "name": "$partnerName",
         "partner_ids": [partnerId],
-        "thread_type": "chat",
+        "thread_type": "group",
       }
     });
 
     final response =
     await http.post(url, headers: _headers, body: body);
-print('response');
+print('Create response');
 print(response.body);
     if (response.statusCode != 200) {
       throw Exception("HTTP ${response.statusCode}");
